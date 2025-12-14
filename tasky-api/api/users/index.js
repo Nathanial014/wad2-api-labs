@@ -33,7 +33,17 @@ router.post('/', asyncHandler(async (req, res) => {
 
 
 async function registerUser(req, res) {
-    // Add input validation logic here
+    // Validate password strength: at least 8 chars, one letter, one digit, one special char
+    const password = req.body.password || '';
+    const strongPasswordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+
+    if (!strongPasswordRegex.test(password)) {
+        return res.status(400).json({
+            success: false,
+            msg: 'Password must be at least 8 characters and include a letter, a digit, and a special character.'
+        });
+    }
+
     await User.create(req.body);
     res.status(201).json({ success: true, msg: 'User successfully created.' });
 }
